@@ -61,14 +61,15 @@ export default function Game() {
   function handlePlay(newValue) {
     const updatedHistory = history.slice(0, currentMove + 1);
     setValue(newValue);
-    setXIsNext(!xIsNext);
     setHistory([...updatedHistory, newValue]);
     setCurrentMove(updatedHistory.length);
+    setXIsNext(updatedHistory.length % 2 === 0);
   }
 
   function setCurrentHistory(h, i) {
     setValue(h);
     setCurrentMove(i);
+    setXIsNext(i % 2 === 0);
   }
 
   return (
