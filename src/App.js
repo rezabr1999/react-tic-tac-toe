@@ -3,79 +3,70 @@ import "./App.css";
 
 function Square({ value, onSquareClick }) {
   return (
-    <button className="square" onClick={onSquareClick}>
+    <button onClick={onSquareClick} className="square">
       {value}
     </button>
   );
 }
 
-function Board({ xIsNext, squares, onPlay }) {
-  function handleClick(i) {
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    const nextSquares = squares.slice();
-    if (xIsNext) {
-      nextSquares[i] = "X";
-    } else {
-      nextSquares[i] = "O";
-    }
-    onPlay(nextSquares);
-  }
+function Board() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [value, setValue] = useState(Array(9).fill(null));
+  const winner = calculateWinner(value);
 
-  const winner = calculateWinner(squares);
   let status;
   if (winner) {
-    status = "Winner: " + winner;
+    status = `Winner: ${winner}`;
   } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
+    status = `Next player: ${xIsNext ? "X" : "O"}`;
+  }
+
+  function handleValue(i) {
+    if (value[i] || calculateWinner(value)) return;
+    const newValue = value.slice();
+    newValue[i] = xIsNext ? "X" : "O";
+    setValue(newValue);
+    setXIsNext(!xIsNext);
   }
 
   return (
     <>
-      <div className="status">{status}</div>
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
+      {status}
+      <div className="board">
+        <div className="row">
+          <Square onSquareClick={() => handleValue(0)} value={value[0]} />
+          <Square onSquareClick={() => handleValue(1)} value={value[1]} />
+          <Square onSquareClick={() => handleValue(2)} value={value[2]} />
+        </div>
+
+        <div className="row">
+          <Square onSquareClick={() => handleValue(3)} value={value[3]} />
+          <Square onSquareClick={() => handleValue(4)} value={value[4]} />
+          <Square onSquareClick={() => handleValue(5)} value={value[5]} />
+        </div>
+
+        <div className="row">
+          <Square onSquareClick={() => handleValue(6)} value={value[6]} />
+          <Square onSquareClick={() => handleValue(7)} value={value[7]} />
+          <Square onSquareClick={() => handleValue(8)} value={value[8]} />
+        </div>
       </div>
     </>
   );
 }
 
 export default function Game() {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
-
-  function handlePlay(nextSquares) {
-    setHistory([...history, nextSquares]);
-    setXIsNext(!xIsNext);
-  }
-
   return (
     <div className="game">
       <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board />
       </div>
-      <div className="game-info">
-        <ol>{/*TODO*/}</ol>
-      </div>
+      <div className="game-info"></div>
     </div>
   );
 }
 
-function calculateWinner(squares) {
+function calculateWinner(suqres) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -86,10 +77,11 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
+
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+    if (suqres[a] && suqres[a] === suqres[b] && suqres[a] === suqres[c]) {
+      return suqres[a];
     }
   }
   return null;
