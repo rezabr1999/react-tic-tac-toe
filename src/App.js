@@ -9,9 +9,7 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-function Board() {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [value, setValue] = useState(Array(9).fill(null));
+function Board({ value, xIsNext, onPlay }) {
   const winner = calculateWinner(value);
 
   let status;
@@ -25,8 +23,7 @@ function Board() {
     if (value[i] || calculateWinner(value)) return;
     const newValue = value.slice();
     newValue[i] = xIsNext ? "X" : "O";
-    setValue(newValue);
-    setXIsNext(!xIsNext);
+    onPlay(newValue);
   }
 
   return (
@@ -56,12 +53,40 @@ function Board() {
 }
 
 export default function Game() {
+  const [value, setValue] = useState(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+
+  function handlePlay(newValue) {
+    const updatedHistory = history.slice(0, currentMove + 1);
+    setValue(newValue);
+    setXIsNext(!xIsNext);
+    setHistory([...updatedHistory, newValue]);
+    setCurrentMove(updatedHistory.length);
+  }
+
+  function setCurrentHistory(h, i) {
+    setValue(h);
+    setCurrentMove(i);
+  }
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <Board value={value} xIsNext={xIsNext} onPlay={handlePlay} />
       </div>
-      <div className="game-info"></div>
+      <div className="game-info">
+        <ul>
+          {history.map((h, i) => (
+            <li key={i}>
+              <button onClick={() => setCurrentHistory(h, i)}>
+                {i === 0 ? "Go to game start" : `Go to move ${i}`}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

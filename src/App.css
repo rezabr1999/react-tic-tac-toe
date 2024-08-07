@@ -20,3 +20,14 @@ body {
   height: 70px;
   font-size: 23px;
 }
+
+.game-info ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  list-style: none;
+}
+
+.game-info ul button {
+  width: 110px;
+}
